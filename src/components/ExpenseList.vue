@@ -6,6 +6,7 @@
         <input v-model.number="newExpenseAmount" placeholder="Amount" type="number" />
         <button @click="addExpense">Add Expense</button>
       </div>
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
   
       <ul class="expense-list">
         <li v-for="expense in expenses" :key="expense.id">
@@ -15,6 +16,7 @@
       </ul>
     </div>
   </template>
+  
   <script>
   import { db } from '../firebase';
   import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
@@ -25,6 +27,7 @@
       const expenses = ref([]);
       const newExpenseName = ref('');
       const newExpenseAmount = ref(0);
+      const errorMessage = ref('');
       const expensesCollectionRef = collection(db, 'expenses');
   
       const fetchExpenses = async () => {
@@ -33,14 +36,23 @@
       };
   
       const addExpense = async () => {
+        if (!newExpenseName.value.trim()) {
+            errorMessage.value = 'Expense name cannot be empty.';
+            setTimeout(() => {
+            errorMessage.value = '';
+            }, 5000);
+            return;
+        }
         await addDoc(expensesCollectionRef, {
-          name: newExpenseName.value,
-          amount: newExpenseAmount.value,
+            name: newExpenseName.value.trim(),
+            amount: newExpenseAmount.value,
         });
         newExpenseName.value = '';
         newExpenseAmount.value = 0;
+        errorMessage.value = '';
         fetchExpenses();
-      };
+    };
+
   
       const deleteExpense = async (id) => {
         const expenseDoc = doc(db, 'expenses', id);
@@ -50,12 +62,18 @@
   
       onMounted(fetchExpenses);
   
-      return { expenses, newExpenseName, newExpenseAmount, addExpense, deleteExpense };
+      return { expenses, newExpenseName, newExpenseAmount, addExpense, deleteExpense, errorMessage };
     },
   };
   </script>
   
   <style>
+  
+.error-message {
+  color: #dc3545;
+  margin: 10px 0;
+}
+
 .container {
   max-width: 600px;
   margin: 0 auto;
