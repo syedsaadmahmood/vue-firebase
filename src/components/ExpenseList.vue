@@ -101,14 +101,14 @@ h2 {
 }
 
 .input-group button {
-  background-color: #007bff;
+  background-color: #24dc7d;
   color: white;
   cursor: pointer;
-  border-color: #007bff;
+  border-color: #24dc7d;
 }
 
 .input-group button:hover {
-  background-color: #0056b3;
+  background-color: #0a7748;
 }
 
 .expense-list {
